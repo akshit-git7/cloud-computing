@@ -1,0 +1,1 @@
+# Azure App Service can host this static app directly without dependencies.
