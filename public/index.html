@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Nova Chat Bot</title>
+    <style>
+      :root {
+        color-scheme: dark;
+        font-family: Inter, system-ui, -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      }
+
+      * { box-sizing: border-box; }
+
+      body {
+        margin: 0;
+        min-height: 100vh;
+        background: linear-gradient(135deg, #0f172a, #1d4ed8);
+        display: grid;
+        place-items: center;
+        color: #e2e8f0;
+      }
+
+      .app { width: min(92vw, 680px); }
+
+      .chat-card {
+        background: rgba(15, 23, 42, 0.9);
+        border: 1px solid rgba(255, 255, 255, 0.1);
+        border-radius: 20px;
+        padding: 1.2rem;
+        box-shadow: 0 16px 40px rgba(2, 6, 23, 0.35);
+      }
+
+      header h1 { margin: 0 0 0.25rem; }
+      header p { margin: 0 0 1rem; color: #94a3b8; }
+
+      .messages {
+        min-height: 320px;
+        max-height: 420px;
+        overflow-y: auto;
+        padding: 0.5rem;
+        display: flex;
+        flex-direction: column;
+        gap: 0.75rem;
+        margin-bottom: 1rem;
+      }
+
+      .message {
+        max-width: 85%;
+        padding: 0.75rem 0.9rem;
+        border-radius: 14px;
+        line-height: 1.4;
+      }
+
+      .message.user {
+        align-self: flex-end;
+        background: #2563eb;
+      }
+
+      .message.bot {
+        align-self: flex-start;
+        background: #334155;
+      }
+
+      .composer { display: flex; gap: 0.75rem; }
+
+      input {
+        flex: 1;
+        border: none;
+        border-radius: 999px;
+        padding: 0.8rem 1rem;
+        font-size: 1rem;
+      }
+
+      button {
+        border: none;
+        border-radius: 999px;
+        padding: 0.8rem 1rem;
+        background: #38bdf8;
+        color: #082f49;
+        font-weight: 700;
+        cursor: pointer;
+      }
+    </style>
+  </head>
+  <body>
+    <main class="app">
+      <section class="chat-card">
+        <header>
+          <h1>Nova Chat Bot</h1>
+          <p>Ask me anything simple and I will respond.</p>
+        </header>
+
+        <div id="messages" class="messages" aria-live="polite"></div>
+
+        <form id="chat-form" class="composer">
+          <input id="message-input" type="text" placeholder="Type a message..." autocomplete="off" />
+          <button type="submit">Send</button>
+        </form>
+      </section>
+    </main>
+
+    <script>
+      const form = document.getElementById('chat-form');
+      const input = document.getElementById('message-input');
+      const messages = document.getElementById('messages');
+
+      function addMessage(text, sender) {
+        const bubble = document.createElement('div');
+        bubble.className = `message ${sender}`;
+        bubble.textContent = text;
+        messages.appendChild(bubble);
+        messages.scrollTop = messages.scrollHeight;
+      }
+
+      function getBotReply(message) {
+        const normalized = message.trim().toLowerCase();
+
+        if (!normalized) return 'Say something so I can help you.';
+        if (['hi', 'hello', 'hey', 'hola'].some((word) => normalized.includes(word))) {
+          return 'Hello! I am Nova, your friendly chat bot. How can I help you today?';
+        }
+        if (normalized.includes('your name')) return 'I am Nova, a simple chat bot built in the browser.';
+        if (normalized.includes('time')) return `The current time is ${new Date().toLocaleTimeString()}.`;
+        if (normalized.includes('date')) return `Today is ${new Date().toLocaleDateString()}.`;
+        if (normalized.includes('weather')) return 'I cannot check live weather right now, but I can help you look up a forecast.';
+        if (normalized.includes('help')) return 'You can ask me about greetings, my name, the time, the date, weather, or just say thanks.';
+        if (normalized.includes('thanks') || normalized.includes('thank you')) return 'You are very welcome!';
+        return `You said: "${message}". I am still learning, but I can help with greetings, my name, the time, the date, weather, or general questions.`;
+      }
+
+      form.addEventListener('submit', (event) => {
+        event.preventDefault();
+        const message = input.value.trim();
+        if (!message) return;
+
+        addMessage(message, 'user');
+        input.value = '';
+        addMessage(getBotReply(message), 'bot');
+      });
+
+      addMessage('Hello! I am Nova. Ask me something simple.', 'bot');
+    </script>
+  </body>
+</html>
